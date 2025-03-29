@@ -1,25 +1,26 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  [key: string]: any; // Allow for additional properties
-}
+/**
+ * @typedef {Object} User
+ * @property {number} id - The user's ID
+ * @property {string} name - The user's name
+ * @property {string} email - The user's email
+ */
 
-interface AuthContextType {
-  user: User | null;
-  login: (userData: Omit<User, 'id'> & { id?: number }) => void;
-  register: (userData: Omit<User, 'id'> & { password: string }) => User;
-  logout: () => void;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+/**
+ * @type {React.Context<{
+ *   user: User|null,
+ *   login: Function,
+ *   register: Function,
+ *   logout: Function,
+ *   loading: boolean
+ * }>}
+ */
+const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
