@@ -3,22 +3,37 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  form?: string;
+}
+
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   
   const validate = () => {
-    const newErrors = {};
+    const newErrors: FormErrors = {};
     
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -44,7 +59,7 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -52,7 +67,7 @@ const Register = () => {
     }));
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!validate()) return;

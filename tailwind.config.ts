@@ -119,7 +119,16 @@ export default {
 				'spacing': 'margin, padding',
 			},
 			fontFamily: {
-				sans: ['SF Pro Display', 'Helvetica', 'Arial', 'sans-serif'],
+				sans: [
+					'system-ui', 
+					'-apple-system', 
+					'BlinkMacSystemFont', 
+					'Segoe UI', 
+					'Roboto', 
+					'Helvetica Neue', 
+					'Arial', 
+					'sans-serif'
+				],
 			},
 		},
 	},

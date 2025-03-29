@@ -1,10 +1,25 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext(null);
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  [key: string]: any; // Allow for additional properties
+}
+
+interface AuthContextType {
+  user: User | null;
+  login: (userData: Omit<User, 'id'> & { id?: number }) => void;
+  register: (userData: Omit<User, 'id'> & { password: string }) => User;
+  logout: () => void;
+  loading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +39,7 @@ export function AuthProvider({ children }) {
 
   const register = (userData) => {
     // In a real app, this would register the user with a backend
-    const newUser = { ...userData, id: Date.now() };
+    const newUser = { ...userData, id: userData.id || Date.now() };
     setUser(newUser);
     localStorage.setItem('bookhavenUser', JSON.stringify(newUser));
     return newUser;

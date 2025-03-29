@@ -3,24 +3,35 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+interface FormData {
+  email: string;
+  password: string;
+}
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+  form?: string;
+}
+
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: ''
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   
   // Get the redirect path from location state or default to home
   const from = location.state?.from?.pathname || '/';
   
   const validate = () => {
-    const newErrors = {};
+    const newErrors: FormErrors = {};
     
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -38,7 +49,7 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
   
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -46,7 +57,7 @@ const Login = () => {
     }));
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!validate()) return;
