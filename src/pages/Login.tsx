@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -12,14 +13,23 @@ const Login = () => {
     password: ''
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    form: ''
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   
   // Get the redirect path from location state or default to home
   const from = location.state?.from?.pathname || '/';
   
   const validate = () => {
-    const newErrors = {};
+    const newErrors = {
+      email: '',
+      password: '',
+      form: ''
+    };
     
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
@@ -34,7 +44,7 @@ const Login = () => {
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !newErrors.email && !newErrors.password;
   };
   
   const handleChange = (e) => {
@@ -64,7 +74,7 @@ const Login = () => {
         });
         navigate(from, { replace: true });
       } catch (error) {
-        setErrors({ form: 'Invalid email or password' });
+        setErrors({ ...errors, form: 'Invalid email or password' });
       } finally {
         setIsLoading(false);
       }

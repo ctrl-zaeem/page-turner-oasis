@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -13,11 +14,24 @@ const Register = () => {
     confirmPassword: ''
   });
   
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    form: ''
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
   
   const validate = () => {
-    const newErrors = {};
+    const newErrors = {
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      form: ''
+    };
     
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -40,7 +54,7 @@ const Register = () => {
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return !newErrors.name && !newErrors.email && !newErrors.password && !newErrors.confirmPassword;
   };
   
   const handleChange = (e) => {
@@ -69,7 +83,7 @@ const Register = () => {
         });
         navigate('/');
       } catch (error) {
-        setErrors({ form: 'Registration failed. Please try again.' });
+        setErrors({ ...errors, form: 'Registration failed. Please try again.' });
       } finally {
         setIsLoading(false);
       }
