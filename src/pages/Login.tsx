@@ -2,11 +2,13 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -62,19 +64,36 @@ const Login = () => {
     
     setIsLoading(true);
     
-    // In a real app, this would call an API
-    // Simulate login API call
+    // Check if user exists in localStorage
     setTimeout(() => {
       try {
-        // For demo purposes, any login succeeds
-        login({
-          id: Date.now(),
-          name: formData.email.split('@')[0],
-          email: formData.email
-        });
-        navigate(from, { replace: true });
+        // Get all registered users from localStorage
+        const allUsers = localStorage.getItem('bookhavenUsers');
+        const users = allUsers ? JSON.parse(allUsers) : [];
+        
+        // Find user with matching email and password
+        const user = users.find(
+          (u) => u.email === formData.email && u.password === formData.password
+        );
+        
+        if (user) {
+          // User found, proceed with login
+          const { password, ...userWithoutPassword } = user;
+          login(userWithoutPassword);
+          toast({
+            title: "Welcome back!",
+            description: `Logged in as ${user.name}`,
+          });
+          navigate(from, { replace: true });
+        } else {
+          // User not found or password incorrect
+          setErrors({ 
+            ...errors, 
+            form: 'Invalid email or password. Please check your credentials or register for an account.' 
+          });
+        }
       } catch (error) {
-        setErrors({ ...errors, form: 'Invalid email or password' });
+        setErrors({ ...errors, form: 'Login failed. Please try again.' });
       } finally {
         setIsLoading(false);
       }

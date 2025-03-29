@@ -1,5 +1,6 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * @typedef {Object} User
@@ -33,7 +34,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    // In a real app, this would verify credentials with a backend
+    // Store currently logged in user
     setUser(userData);
     localStorage.setItem('bookhavenUser', JSON.stringify(userData));
   };

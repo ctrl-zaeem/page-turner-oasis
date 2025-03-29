@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from "@/hooks/use-toast";
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { toast } = useToast();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -72,15 +74,42 @@ const Register = () => {
     
     setIsLoading(true);
     
-    // In a real app, this would call an API
-    // Simulate registration API call
     setTimeout(() => {
       try {
-        register({
+        // Get existing users
+        const existingUsersData = localStorage.getItem('bookhavenUsers');
+        const existingUsers = existingUsersData ? JSON.parse(existingUsersData) : [];
+        
+        // Check if user with the same email already exists
+        const userExists = existingUsers.some(user => user.email === formData.email);
+        
+        if (userExists) {
+          setErrors({ ...errors, form: 'A user with this email already exists. Please login instead.' });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Create new user
+        const newUser = {
+          id: Date.now(),
           name: formData.name,
           email: formData.email,
-          password: formData.password // In a real app, never store passwords in localStorage
+          password: formData.password // In a real app, this would be hashed
+        };
+        
+        // Add to users array and save
+        existingUsers.push(newUser);
+        localStorage.setItem('bookhavenUsers', JSON.stringify(existingUsers));
+        
+        // Register with auth context (without password)
+        const { password, ...userWithoutPassword } = newUser;
+        register(userWithoutPassword);
+        
+        toast({
+          title: "Registration successful!",
+          description: "Your account has been created. Welcome to BookHaven!",
         });
+        
         navigate('/');
       } catch (error) {
         setErrors({ ...errors, form: 'Registration failed. Please try again.' });
